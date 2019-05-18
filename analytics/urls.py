@@ -1,8 +1,7 @@
 from django.urls import path
-
-from .views import RaceView
+from .views import AnalyticsView
 
 app_name = 'analytics'
 urlpatterns = [
-    path('race/<str:name>/', RaceView.as_view(), name='race-view'),
+    path('<int:year>/', AnalyticsView.as_view(), name='analytics'),
 ]
