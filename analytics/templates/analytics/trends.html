@@ -1,0 +1,19 @@
+{% extends 'analytics/base.html' %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12"><h2>{{name}} Trends</h2></div>
+        </div>
+        <p>Average race length: {{average_length}}</p>
+    </div>
+
+    <ul>
+        {% for pr in previous_races %}
+            <li>{{pr.name}} -- {{pr.date}}</li>
+        {% endfor %}
+    </ul>
+
+
+
+{% endblock %}

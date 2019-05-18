@@ -7,10 +7,11 @@ from django.db import connection
 
 from .models import Race, RaceResult, Leader
 
-import datetime
+from datetime import datetime, timedelta
+import statistics
 
 
-class AnalyticsView(TemplateView):
+class AnalyticsBaseView(TemplateView):
     template_name = 'analytics/analytics_base.html'
 
     def get_context_data(self, **kwargs):
@@ -63,4 +64,40 @@ class AnalyticsView(TemplateView):
             'results': results,
             'year': year
         })
+        return context
+
+
+class AnalyticsTrendsView(TemplateView):
+    template_name = 'analytics/trends.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        race_id = kwargs['race_id']
+
+        count = 0
+
+        race_ids = []
+        cur_id = race_id
+        while len(race_ids) <= 10:
+            cur_id -= 36
+            race_ids.append(cur_id)
+
+        race = Race.objects.get(pk=race_id)
+
+        previous_races = Race.objects.filter(pk__in=race_ids)
+
+        # get the average race length
+        avg_length = timedelta(seconds=round(statistics.mean([
+            (pr.length.hour * 3600/1) + (pr.length.minute * 60/1) + pr.length.second for pr in previous_races
+        ])))
+
+        # convert the seconds back to time
+
+        context.update({
+            'name': race.name,
+            'previous_races': previous_races,
+            'average_length': avg_length
+        })
+
         return context
